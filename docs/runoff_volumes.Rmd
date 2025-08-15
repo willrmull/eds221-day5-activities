@@ -1,0 +1,26 @@
+---
+title: "runoff_volumes"
+output: html_document
+date: "2025-08-15"
+---
+
+```{r setup, include=FALSE}
+library(here)
+library(tidyverse)
+
+source(here::here("src", "storm_runoff.R"))
+
+imperv <- seq(from = 0.6, to = 0.8, by = 0.01)
+prediction <- predict_runoff(imperv, 182)
+
+prediction_frame <- data.frame(prediction, imperv)
+
+runoff_plot <- ggplot(data = prediction_frame, aes(x = imperv, y = prediction)) +
+  geom_point() + geom_line() +
+  labs(title = "Water Shed Runofff",
+       ylab = "Volume of Runoff (ft^3)",
+       xlab = "Fraction of Watershed Impervious to Water")
+
+ggsave(here::here("figs", "runoff_plot.png"), width = 5, height = 6)
+```
+
