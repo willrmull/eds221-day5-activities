@@ -21,15 +21,20 @@ names(tilapia_imports)
 tilapia_imports <- tilapia_imports %>% pivot_longer(cols = -country, names_to = "year", values_to = "imports") %>% 
   na.omit(tilapia_imports)
 tilapia_imports$year <- stringr::str_replace(tilapia_imports$year, pattern = "^x", replacement = "")
+
+# Mutate to convert  columns to numeric and omit na values
 tilapia_imports <- tilapia_imports %>% 
   mutate(year = as.numeric(year), imports = as.numeric(imports)) %>% na.omit(tilapia_imports)
 
+# Check that class is numeric
 class(tilapia_imports$year)
 
+# Group by year and sun all imports within that year
 us_imports <- tilapia_imports %>%
   group_by(year) %>% 
    summarize(imports = sum(imports))
 
+# Plot and save to figs folder
 yearly_tilapia_tot <- ggplot(data = us_imports, aes(x = year, y = imports)) +
   geom_line() +
   labs(title = "US Tilapia Imports", 
@@ -37,8 +42,11 @@ yearly_tilapia_tot <- ggplot(data = us_imports, aes(x = year, y = imports)) +
        xlab = "Year")
 ggsave(here::here("figs", "yearly_tilapia_tot.png"), width = 5, height = 6)
 
-subset_imports <- tilapia_imports %>% filter(country == c("Ecuador", "Mexico","Honduras", "Costa Rica"))
+#Create vector of desired countries and filter by it to create subset dataframe
+target_countries <- c("Ecuador", "Mexico", "Honduras", "Costa Rica")
+subset_imports <- tilapia_imports %>% filter(country %in% target)
 
+#Graph and save to figs folder
 subset_tilapia_tot <- ggplot(data = subset_imports, aes(x = year, y = imports, colour = country)) +
   geom_line() +
   labs(title = "US Tilapia Imports", 
